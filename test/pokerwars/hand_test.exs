@@ -4,6 +4,79 @@ defmodule Pokerwars.HandTest do
   alias Pokerwars.Card
   doctest Pokerwars.Hand
 
+  test "straight flush" do
+    cards = [
+      %Card{rank: 1, suit: :spades},
+      %Card{rank: 2, suit: :spades},
+      %Card{rank: 3, suit: :spades},
+      %Card{rank: 4, suit: :spades},
+      %Card{rank: 5, suit: :spades}
+    ]
+
+    assert Hand.score(cards) == :straight_flush
+  end
+
+  test "straight flush scattered" do
+    cards = [
+      %Card{rank: 1, suit: :hearts},
+      %Card{rank: 3, suit: :hearts},
+      %Card{rank: 2, suit: :hearts},
+      %Card{rank: 5, suit: :hearts},
+      %Card{rank: 4, suit: :hearts},
+    ]
+
+    assert Hand.score(cards) == :straight_flush
+  end
+
+  test "straight flush ace high" do
+    cards = [
+      %Card{rank: 1, suit: :diamonds},
+      %Card{rank: 10, suit: :diamonds},
+      %Card{rank: 11, suit: :diamonds},
+      %Card{rank: 13, suit: :diamonds},
+      %Card{rank: 12, suit: :diamonds},
+    ]
+
+    assert Hand.score(cards) == :straight_flush
+  end
+
+
+  test "straight" do
+    cards = [
+      %Card{rank: 1, suit: :spades},
+      %Card{rank: 2, suit: :clubs},
+      %Card{rank: 3, suit: :spades},
+      %Card{rank: 4, suit: :hearts},
+      %Card{rank: 5, suit: :diamonds}
+    ]
+
+    assert Hand.score(cards) == :straight
+  end
+
+  test "straight scattered" do
+    cards = [
+      %Card{rank: 1, suit: :spades},
+      %Card{rank: 3, suit: :spades},
+      %Card{rank: 2, suit: :clubs},
+      %Card{rank: 5, suit: :diamonds},
+      %Card{rank: 4, suit: :hearts},
+    ]
+
+    assert Hand.score(cards) == :straight
+  end
+
+  test "straight ace high" do
+    cards = [
+      %Card{rank: 1, suit: :spades},
+      %Card{rank: 10, suit: :spades},
+      %Card{rank: 11, suit: :clubs},
+      %Card{rank: 13, suit: :diamonds},
+      %Card{rank: 12, suit: :hearts},
+    ]
+
+    assert Hand.score(cards) == :straight
+  end
+
   test "flush spades" do
     cards = [
       %Card{rank: 1, suit: :spades},
