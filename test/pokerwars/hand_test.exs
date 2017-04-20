@@ -4,40 +4,124 @@ defmodule Pokerwars.HandTest do
   alias Pokerwars.Card
   doctest Pokerwars.Hand
 
-  test "evaluates royal flush of hearts" do
+  test "evaluates four of a kind at beginning" do
     cards = [
-      %Card{rank: 10, suit: :hearts},
-      %Card{rank: 11, suit: :hearts},
-      %Card{rank: 12, suit: :hearts},
-      %Card{rank: 13, suit: :hearts},
-      %Card{rank: 14, suit: :hearts}
+      %Card{rank: 1, suit: :spades},
+      %Card{rank: 1, suit: :hearts},
+      %Card{rank: 1, suit: :clubs},
+      %Card{rank: 1, suit: :diamonds},
+      %Card{rank: 4, suit: :spades},
     ]
 
-    assert Hand.score(cards) == :royal_flush
+    assert Hand.score(cards) == :four_of_a_kind
   end
 
-  test "evaluates royal flush of spades" do
+  test "evaluates four of a kind at end" do
     cards = [
+      %Card{rank: 3, suit: :diamonds},
+      %Card{rank: 5, suit: :diamonds},
+      %Card{rank: 5, suit: :spades},
+      %Card{rank: 5, suit: :hearts},
+      %Card{rank: 5, suit: :clubs}
+    ]
+
+    assert Hand.score(cards) == :four_of_a_kind
+  end
+
+  test "evaluates four of a kind scattered" do
+    cards = [
+      %Card{rank: 7, suit: :hearts},
+      %Card{rank: 7, suit: :diamonds},
+      %Card{rank: 7, suit: :spades},
+      %Card{rank: 4, suit: :spades},
+      %Card{rank: 7, suit: :clubs}
+    ]
+
+    assert Hand.score(cards) == :four_of_a_kind
+  end
+
+  test "evaluates three of a kind at beginning" do
+    cards = [
+      %Card{rank: 1, suit: :spades},
+      %Card{rank: 1, suit: :hearts},
+      %Card{rank: 1, suit: :clubs},
+      %Card{rank: 3, suit: :diamonds},
+      %Card{rank: 4, suit: :spades},
+    ]
+
+    assert Hand.score(cards) == :three_of_a_kind
+  end
+
+  test "evaluates three of a kind at end" do
+    cards = [
+      %Card{rank: 3, suit: :diamonds},
+      %Card{rank: 4, suit: :spades},
+      %Card{rank: 1, suit: :spades},
+      %Card{rank: 1, suit: :hearts},
+      %Card{rank: 1, suit: :clubs}
+    ]
+
+    assert Hand.score(cards) == :three_of_a_kind
+  end
+
+  test "evaluates three of a kind scattered" do
+    cards = [
+      %Card{rank: 7, suit: :hearts},
+      %Card{rank: 3, suit: :diamonds},
+      %Card{rank: 7, suit: :spades},
+      %Card{rank: 4, suit: :spades},
+      %Card{rank: 7, suit: :clubs}
+    ]
+
+    assert Hand.score(cards) == :three_of_a_kind
+  end
+
+  test "evaluates pair at beginning" do
+    cards = [
+      %Card{rank: 1, suit: :spades},
+      %Card{rank: 1, suit: :hearts},
+      %Card{rank: 3, suit: :diamonds},
+      %Card{rank: 4, suit: :spades},
+      %Card{rank: 5, suit: :hearts}
+    ]
+
+    assert Hand.score(cards) == :pair
+  end
+
+  test "evaluates pair middle" do
+    cards = [
+      %Card{rank: 3, suit: :diamonds},
       %Card{rank: 10, suit: :spades},
-      %Card{rank: 11, suit: :spades},
-      %Card{rank: 12, suit: :spades},
-      %Card{rank: 13, suit: :spades},
-      %Card{rank: 14, suit: :spades}
+      %Card{rank: 10, suit: :hearts},
+      %Card{rank: 4, suit: :spades},
+      %Card{rank: 5, suit: :hearts}
     ]
 
-    assert Hand.score(cards) == :royal_flush
+    assert Hand.score(cards) == :pair
   end
 
-  test "does not evaluate royal flush for mismatching suits" do
+  test "evaluates pair end" do
     cards = [
-      %Card{rank: 10, suit: :diamonds},
-      %Card{rank: 11, suit: :diamonds},
-      %Card{rank: 12, suit: :diamonds},
-      %Card{rank: 13, suit: :clubs},
-      %Card{rank: 14, suit: :clubs}
+      %Card{rank: 3, suit: :diamonds},
+      %Card{rank: 4, suit: :spades},
+      %Card{rank: 5, suit: :hearts},
+      %Card{rank: 10, suit: :spades},
+      %Card{rank: 10, suit: :hearts},
     ]
 
-    assert Hand.score(cards) != :royal_flush
+    assert Hand.score(cards) == :pair
+  end
+
+  test "evaluates pair scattered" do
+    cards = [
+      %Card{rank: 3, suit: :diamonds},
+      %Card{rank: 7, suit: :spades},
+      %Card{rank: 4, suit: :spades},
+      %Card{rank: 7, suit: :hearts},
+      %Card{rank: 5, suit: :hearts},
+    ]
+
+    assert Hand.score(cards) == :pair
   end
 
   test "evaluates high card" do
