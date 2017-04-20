@@ -11,6 +11,7 @@ defmodule Pokerwars.Hand do
       pair: 2,
       three_of_a_kind: 3,
       four_of_a_kind: 4,
+      flush: 4,
     }
     score_value = fn x ->
       score_hash[x]
@@ -18,6 +19,16 @@ defmodule Pokerwars.Hand do
     Enum.map(hands, &(evaluate_hand(&1)))
      |> Enum.max_by score_value
   end
+
+  defp evaluate_hand([%Card{rank: _, suit: same},
+                      %Card{rank: _, suit: same},
+                      %Card{rank: _, suit: same},
+                      %Card{rank: _, suit: same},
+                      %Card{rank: _, suit: same}
+                      | _]) do
+     :flush
+  end
+
 
   defp evaluate_hand([%Card{rank: same, suit: _},
                       %Card{rank: same, suit: _},
