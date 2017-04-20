@@ -20,6 +20,7 @@ defmodule Pokerwars.Hand do
      |> Enum.max_by score_value
   end
 
+
   defp evaluate_hand([%Card{rank: _, suit: same},
                       %Card{rank: _, suit: same},
                       %Card{rank: _, suit: same},
@@ -50,8 +51,25 @@ defmodule Pokerwars.Hand do
      :pair
   end
 
-  defp evaluate_hand(_) do
-    :high_card
-  end
+  defp evaluate_hand([%Card{rank: 10, suit: _},
+                      %Card{rank: 11, suit: _},
+                      %Card{rank: 12, suit: _},
+                      %Card{rank: 13, suit: _},
+                      %Card{rank: 1, suit: _}
+                      | _]), do: :straight
 
+  defp evaluate_hand([%Card{rank: a, suit: _},
+                      %Card{rank: b, suit: _},
+                      %Card{rank: c, suit: _},
+                      %Card{rank: d, suit: _},
+                      %Card{rank: e, suit: _}
+                      | _]) do
+    cond do
+      (a == b-1) and
+      (a == c-2) and
+      (a == d-3) and
+      (a == e-4) -> :straight
+      true -> :high_card
+    end
+  end
 end
