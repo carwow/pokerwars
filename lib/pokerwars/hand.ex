@@ -1,96 +1,102 @@
 defmodule Pokerwars.Hand do
-  alias Pokerwars.Card
-
-  def score(hand) do
-    evaluate_hands(Permutations.of(hand))
+  def score(cards) do
+    cards = Enum.sort(cards)
+    calculate_score(cards)
   end
 
-  defp evaluate_hands(hands) do
-    score_hash = %{
-      high_card: 1,
-      pair: 2,
-      three_of_a_kind: 3,
-      four_of_a_kind: 4,
-      straight: 5,
-      flush: 6,
-      straight_flush: 7,
-    }
-    score_value = fn x ->
-      score_hash[x]
+  defp calculate_score(cards) do
+    cond do
+      straight_flush?(cards) -> :straight_flush
+      four_of_a_kind?(cards) -> :four_of_a_kind
+      flush?(cards) -> :flush
+      full_house?(cards) -> :full_house
+      straight?(cards) -> :straight
+      three_of_a_kind?(cards) -> :three_of_a_kind
+      two_pair?(cards) -> :two_pair
+      pair?(cards) -> :pair
+      true -> :high_card
     end
-    Enum.map(hands, &(evaluate_hand(&1)))
-     |> Enum.max_by score_value
   end
 
-  defp evaluate_hand([%Card{rank: 10, suit: same},
-                      %Card{rank: 11, suit: same},
-                      %Card{rank: 12, suit: same},
-                      %Card{rank: 13, suit: same},
-                      %Card{rank: 1, suit: same}
-                      | _]), do: :straight_flush
-
-  defp evaluate_hand([%Card{rank: a, suit: same},
-                      %Card{rank: b, suit: same},
-                      %Card{rank: c, suit: same},
-                      %Card{rank: d, suit: same},
-                      %Card{rank: e, suit: same}
-                      | _])
-                  when
-                    (a == b-1) and
-                    (a == c-2) and
-                    (a == d-3) and
-                    (a == e-4),
-                  do: :straight_flush
-
-  defp evaluate_hand([%Card{rank: _, suit: same},
-                      %Card{rank: _, suit: same},
-                      %Card{rank: _, suit: same},
-                      %Card{rank: _, suit: same},
-                      %Card{rank: _, suit: same}
-                      | _]) do
-     :flush
+  defp pair?(cards) do
+    ranks = extract_ranks(cards)
+    case ranks do
+      [a, a, _, _, _] -> true
+      [_, a, a, _, _] -> true
+      [_, _, a, a, _] -> true
+      [_, _, _, a, a] -> true
+      _ -> false
+    end
   end
 
-
-  defp evaluate_hand([%Card{rank: same, suit: _},
-                      %Card{rank: same, suit: _},
-                      %Card{rank: same, suit: _},
-                      %Card{rank: same, suit: _}
-                      | _]) do
-     :four_of_a_kind
+  defp two_pair?(cards) do
+    ranks = extract_ranks(cards)
+    case ranks do
+      [a, a, b, b, _] -> true
+      [a, a, _, b, b] -> true
+      [_, a, a, b, b] -> true
+      _ -> false
+    end
   end
 
-  defp evaluate_hand([%Card{rank: same, suit: _},
-                      %Card{rank: same, suit: _},
-                      %Card{rank: same, suit: _}
-                      | _]) do
-     :three_of_a_kind
+  defp three_of_a_kind?(cards) do
+    ranks = extract_ranks(cards)
+    case ranks do
+      [a, a, a, _, _] -> true
+      [_, a, a, a, _] -> true
+      [_, _, a, a, a] -> true
+      _ -> false
+    end
   end
 
-  defp evaluate_hand([%Card{rank: same, suit: _},
-                      %Card{rank: same, suit: _} | _]) do
-     :pair
+  defp four_of_a_kind?(cards) do
+    ranks = extract_ranks(cards)
+    case ranks do
+      [a, a, a, a, _] -> true
+      [_, a, a, a, a] -> true
+      _ -> false
+    end
   end
 
-  defp evaluate_hand([%Card{rank: 10, suit: _},
-                      %Card{rank: 11, suit: _},
-                      %Card{rank: 12, suit: _},
-                      %Card{rank: 13, suit: _},
-                      %Card{rank: 1, suit: _}
-                      | _]), do: :straight
+  defp flush?(cards) do
+    suits = extract_suits(cards)
+    case suits do
+      [a,a,a,a,a] -> true
+      _ -> false
+    end
+  end
 
-  defp evaluate_hand([%Card{rank: a, suit: _},
-                      %Card{rank: b, suit: _},
-                      %Card{rank: c, suit: _},
-                      %Card{rank: d, suit: _},
-                      %Card{rank: e, suit: _}
-                      | _])
-                  when
-                    (a == b-1) and
-                    (a == c-2) and
-                    (a == d-3) and
-                    (a == e-4),
-                  do: :straight
+  defp straight?(cards) do
+    ranks = extract_ranks(cards)
 
-  defp evaluate_hand(_), do: :high_card
+    ranks == [1,10,11,12,13] or
+    consecutive?(ranks)
+  end
+
+  defp straight_flush?(cards) do
+    straight?(cards) and
+    flush?(cards)
+  end
+
+  defp full_house?(cards) do
+    ranks = extract_ranks(cards)
+    case ranks do
+      [a, a, b, b, b] -> true
+      [b, b, b, a, a] -> true
+      _ -> false
+    end
+  end
+
+  defp extract_ranks(cards) do
+    Enum.map(cards, fn x -> x.rank end)
+  end
+
+  defp extract_suits(cards) do
+    Enum.map(cards, fn x -> x.suit end)
+  end
+
+  defp consecutive?([_a]), do: true
+  defp consecutive?([a | [b | t]]) do
+   a + 1 == b and consecutive?([b | t])
+  end
 end
