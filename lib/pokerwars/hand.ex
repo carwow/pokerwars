@@ -69,7 +69,7 @@ defmodule Pokerwars.Hand do
   defp straight?(cards) do
     ranks = extract_ranks(cards)
 
-    ranks == [1,10,11,12,13] or
+    ranks == [2,3,4,5,14] or
     consecutive?(ranks)
   end
 
