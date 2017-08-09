@@ -1,7 +1,8 @@
 defmodule Pokerwars.TestHelpers do
   import ExUnit.Assertions
+
   def assert_score(card_strings, expected_score) do
-    cards = parse_cards(card_strings)
+    cards = Pokerwars.Hand.parse_cards(card_strings)
     score = Pokerwars.Hand.score(cards)
     assertion = (score == expected_score)
     message = "Expected score of #{print_cards(cards)} to be #{expected_score} but was #{score}"
@@ -14,10 +15,8 @@ defmodule Pokerwars.TestHelpers do
     |> Enum.join(" ")
   end
 
-  def parse_cards(card_strings) do
-    card_strings
-    |> String.split(" ")
-    |> Enum.map(&(Pokerwars.Card.parse(&1)))
+  def assert_set_equal(real_hand, expected_hand) do
+    assert Enum.into(real_hand, %MapSet{}) == Enum.into(expected_hand, %MapSet{})
   end
 end
 ExUnit.start()
