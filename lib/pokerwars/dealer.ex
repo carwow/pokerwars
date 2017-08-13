@@ -40,72 +40,65 @@ defmodule Pokerwars.Dealer do
   @doc """
   Returns the stronger hand.
   """
-  def stronger_hand(a, a), do: a
+  def stronger_hand(hand, hand), do: hand
   def stronger_hand(left_hand, right_hand) do
-    do_stronger_hand(
-      {left_hand, Hand.score(left_hand)},
-      {right_hand, Hand.score(right_hand)}
-    )
-  end
+    left_hand_type = Hand.score(left_hand)
+    right_hand_type = Hand.score(right_hand)
 
-  defp do_stronger_hand({left_hand, left_hand_type}, {right_hand, right_hand_type}) do
     cond do
       @hands_scores[left_hand_type] > @hands_scores[right_hand_type] ->
         left_hand
       @hands_scores[left_hand_type] < @hands_scores[right_hand_type] ->
         right_hand
       true ->
-        stronger_rank_hand(Enum.sort(left_hand), Enum.sort(right_hand), left_hand_type)
+        do_stronger_hand(left_hand, right_hand, left_hand_type)
     end
   end
 
-  # straight and straight flush cases with Ace
-  defp stronger_rank_hand([%{rank: 2}, _, _, _, %{rank: 14}], [%{rank: 2}, _, _, _, %{rank: 14}], type) when type in [:straight, :straight_flush], do: :split_pot
-  defp stronger_rank_hand([%{rank: 2}, _, _, _, %{rank: 14}], hand, type) when type in [:straight, :straight_flush], do: hand
-  defp stronger_rank_hand(hand, [%{rank: 2}, _, _, _, %{rank: 14}], type) when type in [:straight, :straight_flush], do: hand
-
-  defp stronger_rank_hand(left_hand, right_hand, hand_type) when hand_type in [:high_card, :straight, :flush, :straight_flush] do
-    left_sorted_ranks = left_hand |> Enum.map(&(&1.rank)) |> Enum.sort(&(&1 >= &2))
-    right_sorted_ranks = right_hand |> Enum.map(&(&1.rank)) |> Enum.sort(&(&1 >= &2))
-
-    case compare_ordered_ranks(left_sorted_ranks, right_sorted_ranks) do
+  defp do_stronger_hand(left_hand, right_hand, hand_type) do
+    case compare_same_hands(sort_by_rank(left_hand), sort_by_rank(right_hand), hand_type) do
       1 -> left_hand
       -1 -> right_hand
       _ -> :split_pot
     end
   end
-  defp stronger_rank_hand(left_hand, right_hand, :pair), do: do_stronger_rank_hand(left_hand, right_hand, :high_card)
-  defp stronger_rank_hand(left_hand, right_hand, :two_pair), do: do_stronger_rank_hand(left_hand, right_hand, :pair)
-  defp stronger_rank_hand(left_hand, right_hand, :three_of_a_kind), do: do_stronger_rank_hand(left_hand, right_hand, :high_card)
-  defp stronger_rank_hand(left_hand, right_hand, :full_house), do: do_stronger_rank_hand(left_hand, right_hand, :pair)
-  defp stronger_rank_hand(left_hand, right_hand, :four_of_a_kind), do: do_stronger_rank_hand(left_hand, right_hand, :high_card)
 
-  defp do_stronger_rank_hand(left_hand, right_hand, hand_type_for_recursion) do
-    left_pair_card = extract_highest_same(left_hand)
-    right_pair_card = extract_highest_same(right_hand)
+  # straight and straight flush cases with Ace
+  defp compare_same_hands([%{rank: 14}, _, _, _, %{rank: 2}], [%{rank: 14}, _, _, _, %{rank: 2}], type) when type in [:straight, :straight_flush], do: 0
+  defp compare_same_hands([%{rank: 14}, _, _, _, %{rank: 2}], _hand, type) when type in [:straight, :straight_flush], do: -1
+  defp compare_same_hands(_hand, [%{rank: 14}, _, _, _, %{rank: 2}], type) when type in [:straight, :straight_flush], do: 1
+
+  defp compare_same_hands(left_hand, right_hand, hand_type) when hand_type in [:high_card, :straight, :flush, :straight_flush] do
+    left_sorted_ranks = Enum.map(left_hand, &(&1.rank))
+    right_sorted_ranks = Enum.map(right_hand, &(&1.rank))
+    compare_ordered_ranks(left_sorted_ranks, right_sorted_ranks)
+  end
+  defp compare_same_hands(left_hand, right_hand, :pair), do: do_compare_same_hands(left_hand, right_hand, :high_card)
+  defp compare_same_hands(left_hand, right_hand, :two_pair), do: do_compare_same_hands(left_hand, right_hand, :pair)
+  defp compare_same_hands(left_hand, right_hand, :three_of_a_kind), do: do_compare_same_hands(left_hand, right_hand, :high_card)
+  defp compare_same_hands(left_hand, right_hand, :full_house), do: do_compare_same_hands(left_hand, right_hand, :pair)
+  defp compare_same_hands(left_hand, right_hand, :four_of_a_kind), do: do_compare_same_hands(left_hand, right_hand, :high_card)
+
+  defp do_compare_same_hands(left_hand, right_hand, hand_type) do
+    left_pair_card = find_highest_of_a_kind(left_hand)
+    right_pair_card = find_highest_of_a_kind(right_hand)
 
     cond do
-      left_pair_card.rank > right_pair_card.rank -> left_hand
-      left_pair_card.rank < right_pair_card.rank -> right_hand
-      true ->
-        # exclude n-of-a-kind card and continue with the rest
+      left_pair_card.rank > right_pair_card.rank -> 1
+      left_pair_card.rank < right_pair_card.rank -> -1
+      true -> # exclude n-of-a-kind card and continue with the rest
         reduced_left_hand = left_hand |> Enum.filter(&(left_pair_card.rank != &1.rank))
         reduced_right_hand = right_hand |> Enum.filter(&(right_pair_card.rank != &1.rank))
-
-        case stronger_rank_hand(reduced_left_hand, reduced_right_hand, hand_type_for_recursion) do
-          ^reduced_left_hand -> left_hand
-          ^reduced_right_hand -> right_hand
-          _ -> :split_pot
-        end
+        compare_same_hands(reduced_left_hand, reduced_right_hand, hand_type)
     end
   end
 
-  defp extract_highest_same(hand) do
+  defp find_highest_of_a_kind(hand) do
     [{max_card, max_frequence} | hand_tail] =
       hand
       |> Enum.group_by(&(&1.rank))
-      |> Enum.map(fn {rank, cards} -> {hd(cards), length(cards)} end)
-      |> Enum.sort_by(fn {card, repetitions} -> -repetitions end)
+      |> Enum.map(fn {_rank, cards} -> {hd(cards), length(cards)} end)
+      |> Enum.sort_by(fn {_card, repetitions} -> -repetitions end)
 
     # this step is needed for the case of two pairs
     {possible_max_card, possible_max_frequence} = Enum.at(hand_tail, 0, {nil, 0}) # defaults to {nil, 0} when hand_tail empty
@@ -122,4 +115,6 @@ defmodule Pokerwars.Dealer do
   defp compare_ordered_ranks([_ | left_ranks_tail], [_ | right_ranks_tail]) do
     compare_ordered_ranks(left_ranks_tail, right_ranks_tail)
   end
+
+  defp sort_by_rank(hand), do: Enum.sort(hand, &(&1.rank >= &2.rank))
 end

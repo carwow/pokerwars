@@ -4,7 +4,7 @@ defmodule Pokerwars.Hand do
 
   ### Example
 
-    iex> Pokerwars.Hand.parse_cards("As 10s Jc Kd Qh")
+    iex> Pokerwars.Hand.parse("As 10s Jc Kd Qh")
     [%Pokerwars.Card{rank: 14, suit: :spades},
      %Pokerwars.Card{rank: 10, suit: :spades},
      %Pokerwars.Card{rank: 11, suit: :clubs},
@@ -26,7 +26,7 @@ defmodule Pokerwars.Hand do
     calculate_score(cards)
   end
 
-  def parse_cards(card_strings) do
+  def parse(card_strings) do
     card_strings
     |> String.split(" ")
     |> Enum.map(&(Pokerwars.Card.parse(&1)))
