@@ -1,4 +1,4 @@
-defmodule Pokerwars.Hand.FlushTest do
+defmodule Pokerwars.HandTest do
   use ExUnit.Case, async: true
   import Pokerwars.TestHelpers
   doctest Pokerwars.Hand

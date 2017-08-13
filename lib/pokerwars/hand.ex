@@ -1,7 +1,35 @@
 defmodule Pokerwars.Hand do
+  @moduledoc """
+  Provides a set of functions that process hand of cards.
+
+  ### Example
+
+    iex> Pokerwars.Hand.parse("As 10s Jc Kd Qh")
+    [%Pokerwars.Card{rank: 14, suit: :spades},
+     %Pokerwars.Card{rank: 10, suit: :spades},
+     %Pokerwars.Card{rank: 11, suit: :clubs},
+     %Pokerwars.Card{rank: 13, suit: :diamonds},
+     %Pokerwars.Card{rank: 12, suit: :hearts}]
+
+    iex> hand = [%Pokerwars.Card{rank: 14, suit: :spades},
+    ...> %Pokerwars.Card{rank: 10, suit: :spades},
+    ...> %Pokerwars.Card{rank: 11, suit: :clubs},
+    ...> %Pokerwars.Card{rank: 13, suit: :diamonds},
+    ...> %Pokerwars.Card{rank: 12, suit: :hearts}]
+    iex> Pokerwars.Hand.score(hand)
+    :straight
+
+  """
+
   def score(cards) do
     cards = Enum.sort(cards)
     calculate_score(cards)
+  end
+
+  def parse(card_strings) do
+    card_strings
+    |> String.split(" ")
+    |> Enum.map(&(Pokerwars.Card.parse(&1)))
   end
 
   defp calculate_score(cards) do
@@ -61,7 +89,7 @@ defmodule Pokerwars.Hand do
   defp flush?(cards) do
     suits = extract_suits(cards)
     case suits do
-      [a,a,a,a,a] -> true
+      [a, a, a, a, a] -> true
       _ -> false
     end
   end
@@ -69,7 +97,7 @@ defmodule Pokerwars.Hand do
   defp straight?(cards) do
     ranks = extract_ranks(cards)
 
-    ranks == [2,3,4,5,14] or
+    ranks == [2, 3, 4, 5, 14] or
     consecutive?(ranks)
   end
 

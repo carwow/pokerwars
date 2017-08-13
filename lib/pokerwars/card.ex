@@ -1,8 +1,20 @@
 defmodule Pokerwars.Card do
-  # Ranks of numbered cars are represented by the number (2..10)
-  # Jack, Queen, King, Ace represented by 11, 12, 13, 14 respectively
+  @moduledoc """
+  Provides a set of functions for parsing and processing representation of cards.
 
-  # Suits can be: :hearts, :diamonds, :clubs, :spades
+  Ranks of numbered cards are represented by the number (2..10).
+  Jack, Queen, King, Ace represented by 11, 12, 13, 14 respectively.
+  Suits can be: :hearts, :diamonds, :clubs, :spades.
+
+  ### Example
+
+    iex> Card.parse("Jd")
+    %Pokerwars.Card{rank: 11, suit: :diamonds}
+
+    iex> Card.print(%Pokerwars.Card{rank: 14, suit: :diamonds})
+    "Ad"
+
+  """
 
   defstruct [:suit, :rank]
 
@@ -12,7 +24,7 @@ defmodule Pokerwars.Card do
 
   def parse(card_string) do
     card_regex = ~r/(.{1,2})([hdsc])/
-    [[_,face,suit]] = Regex.scan(card_regex, card_string)
+    [[_, face, suit]] = Regex.scan(card_regex, card_string)
     %Pokerwars.Card{rank: parse_rank(face), suit: parse_suit(suit)}
   end
 
