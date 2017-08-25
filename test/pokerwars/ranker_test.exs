@@ -58,6 +58,6 @@ defmodule Pokerwars.RankerTest do
     pair = "Ah Ac 8s 6h 2d"
     high_card = "Kh Js 10c 6h 3d"
 
-    assert_winners([pair], [high_card])
+    assert_winners([pair, high_card], [pair])
   end
 end

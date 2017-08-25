@@ -16,13 +16,15 @@ defmodule Pokerwars.TestHelpers do
     winners = Pokerwars.Ranker.decide_winners(hands)
 
     assertion = (winners == expected_winners)
-    message = "Expected winners to be #{print_hands(expected_winners)} but it was #{print_hands(winners)}"
+    message = "Expected winners to be [#{print_hands(expected_winners)}] but it was [#{print_hands(winners)}]"
 
     assert(assertion, message)
   end
 
   defp print_hands(hands) do
-    Enum.map(hands, fn h -> print_cards(h) end)
+    hands
+    |> Enum.map(fn h -> print_cards(h) end)
+    |> Enum.join(", ")
   end
 
   defp parse_hands(hand_strings) do
