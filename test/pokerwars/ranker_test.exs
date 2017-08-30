@@ -68,4 +68,12 @@ defmodule Pokerwars.RankerTest do
 
     assert_winners([pair, high_card], [pair])
   end
+
+  test "Multiple winning hands are returned when tie occurs" do
+    pair = "Ah Ac 8s 6h 2d"
+    another_pair = "Ah Ac 8c 2h 6d"
+    high_card = "Kh Js 10c 6h 3d"
+
+    assert_winners([pair, another_pair, high_card], [another_pair, pair])
+  end
 end
