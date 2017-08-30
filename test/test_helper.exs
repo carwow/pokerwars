@@ -3,7 +3,7 @@ defmodule Pokerwars.TestHelpers do
 
   def assert_score(card_strings, expected_score) do
     cards = parse_cards(card_strings)
-    score = Pokerwars.Hand.score(cards)
+    score = Pokerwars.Hand.score(cards).name
     assertion = (score == expected_score)
     message = "Expected score of #{print_cards(cards)} to be #{expected_score} but was #{score}"
     assert(assertion, message)

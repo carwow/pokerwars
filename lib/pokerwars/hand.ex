@@ -1,89 +1,100 @@
 defmodule Pokerwars.Hand do
+  alias Pokerwars.Score
+
   def score(cards) do
     cards = Enum.sort(cards)
     calculate_score(cards)
   end
 
   defp calculate_score(cards) do
-    cond do
-      straight_flush?(cards) -> :straight_flush
-      four_of_a_kind?(cards) -> :four_of_a_kind
-      flush?(cards) -> :flush
-      full_house?(cards) -> :full_house
-      straight?(cards) -> :straight
-      three_of_a_kind?(cards) -> :three_of_a_kind
-      two_pair?(cards) -> :two_pair
-      pair?(cards) -> :pair
-      true -> :high_card
-    end
+    [top_score | rest] =
+    [
+      straight_flush?(cards),
+      four_of_a_kind?(cards),
+      flush?(cards),
+      full_house?(cards),
+      straight?(cards),
+      three_of_a_kind?(cards),
+      two_pair?(cards),
+      pair?(cards),
+      Score.high_card
+    ]
+    |> Enum.reject(&(&1 == nil))
+
+    top_score
   end
 
   defp pair?(cards) do
     ranks = extract_ranks(cards)
     case ranks do
-      [a, a, _, _, _] -> true
-      [_, a, a, _, _] -> true
-      [_, _, a, a, _] -> true
-      [_, _, _, a, a] -> true
-      _ -> false
+      [a, a, _, _, _] -> Score.pair
+      [_, a, a, _, _] -> Score.pair
+      [_, _, a, a, _] -> Score.pair
+      [_, _, _, a, a] -> Score.pair
+      _ -> nil
     end
   end
 
   defp two_pair?(cards) do
     ranks = extract_ranks(cards)
     case ranks do
-      [a, a, b, b, _] -> true
-      [a, a, _, b, b] -> true
-      [_, a, a, b, b] -> true
-      _ -> false
+      [a, a, b, b, _] -> Score.two_pair
+      [a, a, _, b, b] -> Score.two_pair
+      [_, a, a, b, b] -> Score.two_pair
+      _ -> nil
     end
   end
 
   defp three_of_a_kind?(cards) do
     ranks = extract_ranks(cards)
     case ranks do
-      [a, a, a, _, _] -> true
-      [_, a, a, a, _] -> true
-      [_, _, a, a, a] -> true
-      _ -> false
+      [a, a, a, _, _] -> Score.three_of_a_kind
+      [_, a, a, a, _] -> Score.three_of_a_kind
+      [_, _, a, a, a] -> Score.three_of_a_kind
+      _ -> nil
     end
   end
 
   defp four_of_a_kind?(cards) do
     ranks = extract_ranks(cards)
     case ranks do
-      [a, a, a, a, _] -> true
-      [_, a, a, a, a] -> true
-      _ -> false
+      [a, a, a, a, _] -> Score.four_of_a_kind
+      [_, a, a, a, a] -> Score.four_of_a_kind
+      _ -> nil
     end
   end
 
   defp flush?(cards) do
     suits = extract_suits(cards)
     case suits do
-      [a,a,a,a,a] -> true
-      _ -> false
+      [a,a,a,a,a] -> Score.flush
+      _ -> nil
     end
   end
 
   defp straight?(cards) do
     ranks = extract_ranks(cards)
 
-    ranks == [2,3,4,5,14] or
-    consecutive?(ranks)
+    cond do
+      ranks == [2,3,4,5,14] -> Score.straight
+      consecutive?(ranks) -> Score.straight
+      true -> nil
+    end
   end
 
   defp straight_flush?(cards) do
-    straight?(cards) and
-    flush?(cards)
+    cond do
+      (straight?(cards) != nil) and (flush?(cards) != nil) -> Score.straight_flush
+      true -> nil
+    end
   end
 
   defp full_house?(cards) do
     ranks = extract_ranks(cards)
     case ranks do
-      [a, a, b, b, b] -> true
-      [b, b, b, a, a] -> true
-      _ -> false
+      [a, a, b, b, b] -> Score.full_house
+      [b, b, b, a, a] -> Score.full_house
+      _ -> nil
     end
   end
 

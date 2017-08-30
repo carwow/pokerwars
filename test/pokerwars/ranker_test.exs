@@ -5,6 +5,14 @@ defmodule Pokerwars.RankerTest do
 
   doctest Pokerwars.Ranker
 
+  test "Order of hands does not matter" do
+    straight_flush = "5c 6c 7c 8c 9c"
+    four_of_a_kind = "Ah Ac As Ad 8c"
+
+    assert_winners([straight_flush, four_of_a_kind], [straight_flush])
+    assert_winners([four_of_a_kind, straight_flush], [straight_flush])
+  end
+
   test "Straight flush beats four of a kind" do
     straight_flush = "5c 6c 7c 8c 9c"
     four_of_a_kind = "Ah Ac As Ad 8c"
