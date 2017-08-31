@@ -4,23 +4,31 @@ defmodule Pokerwars.Score do
   defstruct [
     :name,
     :value,
-    :highest_rank,
-    :triplet_rank,
-    :first_pair_rank,
-    :second_pair_rank,
+    :primary_rank,
+    :secondary_rank,
     :kickers
   ]
 
-  def straight_flush do
-    %Score{name: :straight_flush, value: 9}
+  def straight_flush(primary_rank) do
+    %Score{name: :straight_flush, value: 9, primary_rank: primary_rank}
   end
 
-  def four_of_a_kind do
-    %Score{name: :four_of_a_kind, value: 8}
+  def four_of_a_kind(primary_rank, secondary_rank) do
+    %Score{
+      name: :four_of_a_kind,
+      value: 8,
+      primary_rank: primary_rank,
+      secondary_rank: secondary_rank
+    }
   end
 
-  def full_house do
-    %Score{name: :full_house, value: 7}
+  def full_house(primary_rank, secondary_rank) do
+    %Score{
+      name: :full_house,
+      value: 7,
+      primary_rank: primary_rank,
+      secondary_rank: secondary_rank
+    }
   end
 
   def flush do

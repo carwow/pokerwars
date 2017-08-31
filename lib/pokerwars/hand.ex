@@ -58,8 +58,8 @@ defmodule Pokerwars.Hand do
   defp four_of_a_kind?(cards) do
     ranks = extract_ranks(cards)
     case ranks do
-      [a, a, a, a, _] -> Score.four_of_a_kind
-      [_, a, a, a, a] -> Score.four_of_a_kind
+      [a, a, a, a, x] -> Score.four_of_a_kind(a, x)
+      [x, a, a, a, a] -> Score.four_of_a_kind(a, x)
       _ -> nil
     end
   end
@@ -83,8 +83,13 @@ defmodule Pokerwars.Hand do
   end
 
   defp straight_flush?(cards) do
+    highest_rank =
+    cards
+    |> Enum.map(&(&1.rank))
+    |> Enum.max
+
     cond do
-      (straight?(cards) != nil) and (flush?(cards) != nil) -> Score.straight_flush
+      (straight?(cards) != nil) and (flush?(cards) != nil) -> Score.straight_flush(highest_rank)
       true -> nil
     end
   end
@@ -92,8 +97,8 @@ defmodule Pokerwars.Hand do
   defp full_house?(cards) do
     ranks = extract_ranks(cards)
     case ranks do
-      [a, a, b, b, b] -> Score.full_house
-      [b, b, b, a, a] -> Score.full_house
+      [b, b, a, a, a] -> Score.full_house(a,b)
+      [a, a, a, b, b] -> Score.full_house(a,b)
       _ -> nil
     end
   end
