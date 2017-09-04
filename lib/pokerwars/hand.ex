@@ -17,7 +17,7 @@ defmodule Pokerwars.Hand do
       three_of_a_kind?(cards),
       two_pair?(cards),
       pair?(cards),
-      Score.high_card
+      high_card?(cards)
     ]
     |> Enum.reject(&(&1 == nil))
 
@@ -109,6 +109,12 @@ defmodule Pokerwars.Hand do
     end
   end
 
+  defp high_card?(cards) do
+    kickers = extract_ranks(cards)
+    Score.high_card(kickers)
+  end
+
+
   defp extract_ranks(cards) do
     Enum.map(cards, fn x -> x.rank end)
   end
@@ -121,4 +127,5 @@ defmodule Pokerwars.Hand do
   defp consecutive?([a | [b | t]]) do
    a + 1 == b and consecutive?([b | t])
   end
+
 end

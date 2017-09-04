@@ -63,7 +63,7 @@ defmodule Pokerwars.Score do
      kickers: kickers}
   end
 
-  def high_card do
-    %Score{name: :high_card, value: 1}
+  def high_card(kickers) do
+    %Score{name: :high_card, value: 1, kickers: kickers}
   end
 end

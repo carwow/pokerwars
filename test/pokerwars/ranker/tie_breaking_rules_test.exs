@@ -185,4 +185,27 @@ defmodule Pokerwars.TieBreakingRulesTest do
 
     winners_and_losers |> Enum.each(assertion)
   end
+
+  test "Two high card hands with identical kickers are a tie" do
+    high_card = "Kd Js 9h 5s 3d"
+    another_high_card = "Kd Js 9h 5s 3d"
+
+    assert_winners([high_card, another_high_card], [another_high_card, high_card])
+  end
+
+  test "High card tie breaking uses all cards as kickerss" do
+    winners_and_losers = [
+      ["Kd Js 9h 5s 3d", "Qd Js 9h 5s 3d"],
+      ["Kd Js 9h 5s 3d", "Kd 10s 9h 5s 3d"],
+      ["Kd Js 9h 5s 3d", "Kd Js 8h 5s 3d"],
+      ["Kd Js 9h 5s 3d", "Kd Js 9h 4s 3d"],
+      ["Kd Js 9h 5s 3d", "Kd Js 9h 5s 2d"],
+    ]
+
+    assertion = fn [winner | [loser | _]] ->
+      assert_winners([winner, loser], [winner])
+    end
+
+    winners_and_losers |> Enum.each(assertion)
+  end
 end
