@@ -7,7 +7,7 @@ defmodule Pokerwars.Hand do
   end
 
   defp calculate_score(cards) do
-    [top_score | rest] =
+    [top_score | _] =
     [
       straight_flush?(cards),
       four_of_a_kind?(cards),
@@ -66,8 +66,9 @@ defmodule Pokerwars.Hand do
 
   defp flush?(cards) do
     suits = extract_suits(cards)
+    kickers = extract_ranks(cards)
     case suits do
-      [a,a,a,a,a] -> Score.flush
+      [a,a,a,a,a] -> Score.flush(kickers)
       _ -> nil
     end
   end

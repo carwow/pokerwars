@@ -23,3 +23,4 @@ defmodule Pokerwars.Helpers do
     maxes_by(rest, func, results)
   end
 end
+

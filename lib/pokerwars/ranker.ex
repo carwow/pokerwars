@@ -10,7 +10,8 @@ defmodule Pokerwars.Ranker do
 
     score.value +
     primary_rank_modifier(score.primary_rank) +
-    secondary_rank_modifier(score.secondary_rank)
+    secondary_rank_modifier(score.secondary_rank) +
+    kickers_modifier(score.kickers)
   end
 
   defp primary_rank_modifier(nil), do: 0
@@ -23,5 +24,18 @@ defmodule Pokerwars.Ranker do
 
   defp secondary_rank_modifier(secondary_rank) do
     secondary_rank * 0.0001
+  end
+
+  defp kickers_modifier(kickers) do
+    _kickers_modifier(kickers, 2, 0)
+  end
+
+  defp _kickers_modifier(nil, _, result), do: result
+
+  defp _kickers_modifier([], _, result), do: result
+
+  defp _kickers_modifier([ kicker | others], index, result) do
+    result = result + (kicker * :math.pow(100, index*-1))
+    _kickers_modifier(others, index+1, result)
   end
 end

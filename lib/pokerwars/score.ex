@@ -31,8 +31,12 @@ defmodule Pokerwars.Score do
     }
   end
 
-  def flush do
-    %Score{name: :flush, value: 6}
+  def flush(kickers) do
+    sorted_kickers = kickers
+    |> Enum.sort
+    |> Enum.reverse
+
+    %Score{name: :flush, value: 6, kickers: sorted_kickers}
   end
 
   def straight do

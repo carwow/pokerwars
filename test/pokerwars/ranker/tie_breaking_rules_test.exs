@@ -65,4 +65,27 @@ defmodule Pokerwars.TieBreakingRulesTest do
 
     assert_winners([high_full_house, low_full_house], [high_full_house])
   end
+
+  test "Two flushes with same ranks are a tie" do
+    clubs_flush = "10c Jc 4c 7c Ac"
+    hearths_flush = "10h Jh 4h 7h Ah"
+
+    assert_winners([clubs_flush, hearths_flush], [hearths_flush, clubs_flush])
+  end
+
+  test "Kickers decide winner in a flush tie break" do
+    winners_and_losers = [
+      ["Ac Jc 9c 7c 4c", "Kc Jc 9c 7c 4c"],
+      ["Ac Jc 9c 7c 4c", "Ac 10c 9c 7c 4c"],
+      ["Ac Jc 9c 7c 4c", "Ac Jc 8c 7c 4c"],
+      ["Ac Jc 9c 7c 4c", "Ac Jc 9c 6c 4c"],
+      ["Ac Jc 9c 7c 4c", "Ac Jc 9c 7c 3c"]
+    ]
+
+    assertion = fn [winner | [loser | _]] ->
+      assert_winners([winner, loser], [winner])
+    end
+
+    winners_and_losers |> Enum.each(assertion)
+  end
 end
