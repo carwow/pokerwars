@@ -39,12 +39,13 @@ defmodule Pokerwars.Score do
     %Score{name: :flush, value: 6, kickers: sorted_kickers}
   end
 
-  def straight do
-    %Score{name: :straight, value: 5}
+  def straight(primary_rank) do
+    %Score{name: :straight, value: 5, primary_rank: primary_rank}
   end
 
-  def three_of_a_kind do
-    %Score{name: :three_of_a_kind, value: 4}
+  def three_of_a_kind(primary_rank, kickers) do
+    %Score{name: :three_of_a_kind, value: 4,
+     primary_rank: primary_rank, kickers: kickers}
   end
 
   def two_pair do

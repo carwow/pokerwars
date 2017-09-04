@@ -88,4 +88,45 @@ defmodule Pokerwars.TieBreakingRulesTest do
 
     winners_and_losers |> Enum.each(assertion)
   end
+
+  test "Two straights with the same high card are a tie" do
+    straight = "10c Jd Qc Kh As"
+    another_straight = "10h Js Qh Ks Ad"
+
+    assert_winners([straight, another_straight], [another_straight, straight])
+  end
+
+  test "The straight with the highest card wins" do
+    high_straight = "10c Jd Qc Kh As"
+    low_straight = "9h 10s Js Qh Ks"
+
+    assert_winners([high_straight, low_straight], [high_straight])
+  end
+
+  test "Highested ranked three of a kind wins" do
+    high_three_of_a_kind = "10c 10d 10s 3h 2h"
+    low_three_of_a_kind = "5c 5d 5s 3h 2h"
+
+    assert_winners([high_three_of_a_kind, low_three_of_a_kind], [high_three_of_a_kind])
+  end
+
+  test "Two identical three of a kind hands are a tie" do
+    three_of_a_kind = "10c 10d 10s 3h 2h"
+    another_three_of_a_kind = "10c 10d 10s 3h 2h"
+
+    assert_winners([three_of_a_kind, another_three_of_a_kind], [another_three_of_a_kind, three_of_a_kind])
+  end
+
+  test "The two kickers are used to break a three of a kind tie" do
+    winners_and_losers = [
+      ["10s 10h 10d 5s 3d", "10s 10h 10d 4s 3d"],
+      ["10s 10h 10d 5s 3d", "10s 10h 10d 5s 2d"]
+    ]
+
+    assertion = fn [winner | [loser | _]] ->
+      assert_winners([winner, loser], [winner])
+    end
+
+    winners_and_losers |> Enum.each(assertion)
+  end
 end

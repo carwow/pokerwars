@@ -48,9 +48,9 @@ defmodule Pokerwars.Hand do
   defp three_of_a_kind?(cards) do
     ranks = extract_ranks(cards)
     case ranks do
-      [a, a, a, _, _] -> Score.three_of_a_kind
-      [_, a, a, a, _] -> Score.three_of_a_kind
-      [_, _, a, a, a] -> Score.three_of_a_kind
+      [a, a, a, k1, k2] -> Score.three_of_a_kind(a, [k1, k2])
+      [k1, a, a, a, k2] -> Score.three_of_a_kind(a, [k1, k2])
+      [k1, k2, a, a, a] -> Score.three_of_a_kind(a, [k1, k2])
       _ -> nil
     end
   end
@@ -76,9 +76,14 @@ defmodule Pokerwars.Hand do
   defp straight?(cards) do
     ranks = extract_ranks(cards)
 
+    highest_rank =
+    cards
+    |> Enum.map(&(&1.rank))
+    |> Enum.max
+
     cond do
-      ranks == [2,3,4,5,14] -> Score.straight
-      consecutive?(ranks) -> Score.straight
+      ranks == [2,3,4,5,14] -> Score.straight(highest_rank)
+      consecutive?(ranks) -> Score.straight(highest_rank)
       true -> nil
     end
   end
