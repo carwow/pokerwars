@@ -48,8 +48,13 @@ defmodule Pokerwars.Score do
      primary_rank: primary_rank, kickers: kickers}
   end
 
-  def two_pair do
-    %Score{name: :two_pair, value: 3}
+  def two_pair(primary_rank, secondary_rank, kicker) do
+    %Score{
+      name: :two_pair, value: 3,
+      primary_rank: primary_rank,
+      secondary_rank: secondary_rank,
+      kickers: [kicker]
+    }
   end
 
   def pair do

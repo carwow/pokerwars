@@ -38,9 +38,9 @@ defmodule Pokerwars.Hand do
   defp two_pair?(cards) do
     ranks = extract_ranks(cards)
     case ranks do
-      [a, a, b, b, _] -> Score.two_pair
-      [a, a, _, b, b] -> Score.two_pair
-      [_, a, a, b, b] -> Score.two_pair
+      [a, a, b, b, k] -> Score.two_pair(a, b, k)
+      [a, a, k, b, b] -> Score.two_pair(a, b, k)
+      [k, a, a, b, b] -> Score.two_pair(a, b, k)
       _ -> nil
     end
   end
