@@ -9,33 +9,17 @@ defmodule Pokerwars.Ranker do
     score = Pokerwars.Hand.score(hand)
 
     score.value +
-    primary_rank_modifier(score.primary_rank) +
-    secondary_rank_modifier(score.secondary_rank) +
-    kickers_modifier(score.kickers)
+    tie_breaking_modifier(score.tie_breaking_ranks)
   end
 
-  defp primary_rank_modifier(nil), do: 0
-
-  defp primary_rank_modifier(primary_rank) do
-    primary_rank * 0.01
+  defp tie_breaking_modifier(ranks) do
+    _tie_breaking_modifier(ranks, 1, 0)
   end
 
-  defp secondary_rank_modifier(nil), do: 0
+  defp _tie_breaking_modifier([], _, result), do: result
 
-  defp secondary_rank_modifier(secondary_rank) do
-    secondary_rank * 0.0001
-  end
-
-  defp kickers_modifier(kickers) do
-    _kickers_modifier(kickers, 2, 0)
-  end
-
-  defp _kickers_modifier(nil, _, result), do: result
-
-  defp _kickers_modifier([], _, result), do: result
-
-  defp _kickers_modifier([ kicker | others], index, result) do
-    result = result + (kicker * :math.pow(100, index*-1))
-    _kickers_modifier(others, index+1, result)
+  defp _tie_breaking_modifier([ rank | others], index, result) do
+    result = result + (rank * :math.pow(100, index*-1))
+    _tie_breaking_modifier(others, index+1, result)
   end
 end
