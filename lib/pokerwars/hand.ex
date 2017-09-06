@@ -89,12 +89,15 @@ defmodule Pokerwars.Hand do
   end
 
   defp straight_flush?(cards) do
+    ranks = extract_ranks(cards)
+
     highest_rank =
     cards
     |> Enum.map(&(&1.rank))
     |> Enum.max
 
     cond do
+      ranks == [2,3,4,5,14] and (flush?(cards) != nil) -> Score.straight_flush(5)
       (straight?(cards) != nil) and (flush?(cards) != nil) -> Score.straight_flush(highest_rank)
       true -> nil
     end
