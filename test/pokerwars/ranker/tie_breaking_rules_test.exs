@@ -24,6 +24,13 @@ defmodule Pokerwars.TieBreakingRulesTest do
     assert_winners([royal_flush, king_high_straight_flush], [royal_flush])
   end
 
+  test "The straight flush with the highest card wins (low ace straight)" do
+    high_straight = "9s 10s Js Qs Ks"
+    low_straight = "Ah 2h 3h 4h 5h"
+
+    assert_winners([high_straight, low_straight], [high_straight])
+  end
+
   test "Same four-of-a-kind rank and kicker both wins" do
     four_of_a_kind = "Ac Ad Ah As 8h"
     another_four_of_a_kind = "Ac Ad Ah As 8h"
