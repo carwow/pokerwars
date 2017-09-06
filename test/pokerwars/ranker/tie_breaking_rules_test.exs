@@ -103,6 +103,13 @@ defmodule Pokerwars.TieBreakingRulesTest do
     assert_winners([high_straight, low_straight], [high_straight])
   end
 
+  test "The straight with the highest card wins (low ace straight)" do
+    high_straight = "9h 10c Jd Qc Kh"
+    low_straight = "Ah 2s 3s 4h 5s"
+
+    assert_winners([high_straight, low_straight], [high_straight])
+  end
+
   test "Highested ranked three of a kind wins" do
     high_three_of_a_kind = "10c 10d 10s 3h 2h"
     low_three_of_a_kind = "5c 5d 5s 3h 2h"
