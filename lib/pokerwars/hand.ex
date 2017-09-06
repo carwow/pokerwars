@@ -82,7 +82,7 @@ defmodule Pokerwars.Hand do
     |> Enum.max
 
     cond do
-      ranks == [2,3,4,5,14] -> Score.straight(highest_rank)
+      ranks == [2,3,4,5,14] -> Score.straight(5)
       consecutive?(ranks) -> Score.straight(highest_rank)
       true -> nil
     end
