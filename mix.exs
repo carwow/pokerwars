@@ -28,6 +28,8 @@ defmodule Pokerwars.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [
+      {:combination, "~> 0.0.3"}
+    ]
   end
 end
