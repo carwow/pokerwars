@@ -34,16 +34,15 @@ defmodule Pokerwars.Card do
     r = card.rank
     cond do
       r in 2..10 -> Integer.to_string(r)
-      r == 11 -> 'J'
-      r == 12 -> 'Q'
-      r == 13 -> 'K'
-      r == 14 -> 'A'
+      r == 11 -> "J"
+      r == 12 -> "Q"
+      r == 13 -> "K"
+      r == 14 -> "A"
     end
   end
 
   defp print_suit(card) do
-    s = card.suit
-    case s do
+    case card.suit do
       :hearts -> "h"
       :diamonds -> "d"
       :clubs -> "c"

@@ -17,6 +17,13 @@ defmodule Pokerwars.TieBreakingRulesTest do
     assert_winners([high_straight_flush, another_high_straight_flush], [another_high_straight_flush, high_straight_flush])
   end
 
+  test "An ace lower straight flush losses against any other kind of straight flush" do
+    high_straight_flush = "Jc 10c 9c 8c 7c"
+    low_straight_flush = "Ac 2c 3c 4c 5c"
+
+    assert_winners([low_straight_flush, high_straight_flush], [high_straight_flush])
+  end
+
   test "An ace high straight flush wins against a king high royal flush" do
     royal_flush = "Ac Kc Qc Jc 10c"
     king_high_straight_flush = "Kd Qd Jd 10d 9d"
@@ -101,6 +108,20 @@ defmodule Pokerwars.TieBreakingRulesTest do
     low_straight = "9h 10s Js Qh Ks"
 
     assert_winners([high_straight, low_straight], [high_straight])
+  end
+
+  test "An ace lower straight losses against any other kind of straight" do
+    high_straight = "Jc 10d 9c 8h 7c"
+    low_straight = "Ad 2h 3c 4h 5c"
+
+    assert_winners([low_straight, high_straight], [high_straight])
+  end
+
+  test "An ace high straight wins against a king high straight" do
+    high_straight = "Ad Qh Kc Jh 10c"
+    low_straight = "6c 10d 9c 8h 7c"
+
+    assert_winners([low_straight, high_straight], [high_straight])
   end
 
   test "Highested ranked three of a kind wins" do

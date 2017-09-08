@@ -21,6 +21,13 @@ defmodule Pokerwars.TestHelpers do
     assert(assertion, message)
   end
 
+  def assert_best_hand(hand_string, expected_best_hand_string) do
+    cards = parse_cards(hand_string)
+    expected = parse_cards(expected_best_hand_string) |> Enum.sort
+
+    assert Pokerwars.Ranker.decide_best_hand(cards) == expected
+  end
+
   defp print_hands(hands) do
     hands
     |> Enum.map(fn h -> print_cards(h) end)

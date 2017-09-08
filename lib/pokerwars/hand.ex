@@ -27,10 +27,10 @@ defmodule Pokerwars.Hand do
   defp pair?(cards) do
     ranks = extract_ranks(cards)
     case ranks do
-      [a, a, k1, k2, k3] -> Score.pair(a, [k1,k2,k3])
-      [k1, a, a, k2, k3] -> Score.pair(a, [k1,k2,k3])
-      [k1, k2, a, a, k3] -> Score.pair(a, [k1,k2,k3])
-      [k1, k2, k3, a, a] -> Score.pair(a, [k1,k2,k3])
+      [a, a, k1, k2, k3] -> Score.pair(a, [k1, k2, k3])
+      [k1, a, a, k2, k3] -> Score.pair(a, [k1, k2, k3])
+      [k1, k2, a, a, k3] -> Score.pair(a, [k1, k2, k3])
+      [k1, k2, k3, a, a] -> Score.pair(a, [k1, k2, k3])
       _ -> nil
     end
   end
@@ -67,8 +67,9 @@ defmodule Pokerwars.Hand do
   defp flush?(cards) do
     suits = extract_suits(cards)
     kickers = extract_ranks(cards)
+
     case suits do
-      [a,a,a,a,a] -> Score.flush(kickers)
+      [a, a, a, a, a] -> Score.flush(kickers)
       _ -> nil
     end
   end
@@ -76,26 +77,25 @@ defmodule Pokerwars.Hand do
   defp straight?(cards) do
     ranks = extract_ranks(cards)
 
-    highest_rank =
-    cards
-    |> Enum.map(&(&1.rank))
-    |> Enum.max
-
     cond do
-      ranks == [2,3,4,5,14] -> Score.straight(highest_rank)
-      consecutive?(ranks) -> Score.straight(highest_rank)
+      ranks == [2, 3, 4, 5, 14] ->
+        # The highest rank is 5 instead of 14 because the Ace has been used as one
+        Score.straight(5)
+      consecutive?(ranks) ->
+        extract_highest_ranks(cards)
+        |> Score.straight()
       true -> nil
     end
   end
 
   defp straight_flush?(cards) do
-    highest_rank =
-    cards
-    |> Enum.map(&(&1.rank))
-    |> Enum.max
-
     cond do
-      (straight?(cards) != nil) and (flush?(cards) != nil) -> Score.straight_flush(highest_rank)
+      lower_ace_straight?(straight?(cards)) and (flush?(cards) != nil) ->
+        # The highest rank is 5 instead of 14 because the Ace has been used as one
+        Score.straight_flush(5)
+      (straight?(cards) != nil) and (flush?(cards) != nil) ->
+        extract_highest_ranks(cards)
+        |> Score.straight_flush()
       true -> nil
     end
   end
@@ -103,8 +103,8 @@ defmodule Pokerwars.Hand do
   defp full_house?(cards) do
     ranks = extract_ranks(cards)
     case ranks do
-      [b, b, a, a, a] -> Score.full_house(a,b)
-      [a, a, a, b, b] -> Score.full_house(a,b)
+      [b, b, a, a, a] -> Score.full_house(a, b)
+      [a, a, a, b, b] -> Score.full_house(a, b)
       _ -> nil
     end
   end
@@ -123,9 +123,17 @@ defmodule Pokerwars.Hand do
     Enum.map(cards, fn x -> x.suit end)
   end
 
+  defp extract_highest_ranks(cards) do
+    cards
+    |> Enum.map(&(&1.rank))
+    |> Enum.max
+  end
+
   defp consecutive?([_a]), do: true
   defp consecutive?([a | [b | t]]) do
    a + 1 == b and consecutive?([b | t])
   end
 
+  defp lower_ace_straight?(%{name: :straight, tie_breaking_ranks: [5], value: 5}), do: true
+  defp lower_ace_straight?(_), do: false
 end
