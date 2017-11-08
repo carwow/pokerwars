@@ -1,10 +1,15 @@
 defmodule Pokerwars.Card do
   # Ranks of numbered cars are represented by the number (2..10)
   # Jack, Queen, King, Ace represented by 11, 12, 13, 14 respectively
-
   # Suits can be: :hearts, :diamonds, :clubs, :spades
 
   defstruct [:suit, :rank]
+
+  @ranks 2..14 |> Enum.to_list
+  @suits [:hearts, :diamonds, :clubs, :spades]
+
+  def ranks, do: @ranks
+  def suits, do: @suits
 
   def print(card) do
     "#{print_face(card)}#{print_suit(card)}"
