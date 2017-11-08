@@ -207,7 +207,7 @@ defmodule Pokerwars.TieBreakingRulesTest do
     assert_winners([high_card, another_high_card], [another_high_card, high_card])
   end
 
-  test "High card tie breaking uses all cards as kickerss" do
+  test "High card tie breaking uses all cards as kickers" do
     winners_and_losers = [
       ["Kd Js 9h 5s 3d", "Qd Js 9h 5s 3d"],
       ["Kd Js 9h 5s 3d", "Kd 10s 9h 5s 3d"],
