@@ -6,6 +6,14 @@ defmodule Pokerwars.Card do
 
   defstruct [:suit, :rank]
 
+  def suits do
+    [:hearts, :diamonds, :spades, :clubs]
+  end
+
+  def ranks do
+    1..14
+  end
+
   def print(card) do
     "#{print_face(card)}#{print_suit(card)}"
   end
