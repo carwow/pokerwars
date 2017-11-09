@@ -3,7 +3,7 @@ defmodule Pokerwars.Helpers do
     maxes_by(collection, func, [])
   end
 
-  defp maxes_by([], func, result), do: result
+  defp maxes_by([], _func, result), do: result
 
   defp maxes_by([head | rest], func, []) do
     maxes_by(rest, func, [head])
