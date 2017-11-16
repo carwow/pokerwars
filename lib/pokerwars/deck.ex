@@ -12,6 +12,11 @@ defmodule Pokerwars.Deck do
     %__MODULE__{cards: cards}
   end
 
+  def from_cards(cards) do
+    %__MODULE__{cards: cards}
+  end
+
+
   def size(%__MODULE__{cards: cards}) do
     length(cards)
   end

@@ -1,5 +1,6 @@
 defmodule Pokerwars.DeckTest do
   use ExUnit.Case, async: true
+  import Pokerwars.TestHelpers
 
   alias Pokerwars.{Deck, Card}
 
@@ -49,5 +50,18 @@ defmodule Pokerwars.DeckTest do
       Deck.deal(new_deck)
 
     assert Card.print(card) == "3h"
+  end
+
+  test "it creates a new deck in a specified order" do
+    {cards, _} =
+      Deck.from_cards(parse_cards("2h Ah 10d 7s 8h"))
+      |> Deck.take(5)
+
+    result =
+      cards
+      |> Enum.map(&Card.print/1)
+      |> Enum.join(" ")
+
+    assert result == "2h Ah 10d 7s 8h"
   end
 end
