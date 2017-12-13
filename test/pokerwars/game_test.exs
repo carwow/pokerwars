@@ -44,7 +44,7 @@ defmodule Pokerwars.GameTest do
     {:ok, game} = Game.apply_action(game, {:start_game})
 
 
-    assert game.status == :started
+    assert game.status == :pre_flop
     assert Enum.map(game.players, &(&1.name)) == ["David", "Jade"]
   end
 
@@ -73,5 +73,4 @@ defmodule Pokerwars.GameTest do
     assert status == :invalid_action
     assert game.status == :waiting_for_players
   end
-
 end
