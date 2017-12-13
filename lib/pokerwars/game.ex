@@ -69,14 +69,14 @@ defmodule Pokerwars.Game do
     {deck, player}
   end
 
-  defp deal_cards_from_deck(deck, [] = rest) do
+  defp deal_cards_from_deck(deck, []) do
     {deck, []}
   end
 
-  defp deal_cards_from_deck(deck, [player | rest]) do
+  defp deal_cards_from_deck(deck, [player | others]) do
     {deck_after_deal, updated_player} = deal_card_to_player(deck, player)
-    {final_deck, players} = deal_cards_from_deck(deck_after_deal, rest)
+    {updated_deck, updated_others} = deal_cards_from_deck(deck_after_deal, others)
 
-    {final_deck, [updated_player | players]}
+    {updated_deck, [updated_player | updated_others]}
   end
 end
