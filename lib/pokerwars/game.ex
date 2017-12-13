@@ -48,7 +48,8 @@ defmodule Pokerwars.Game do
   defp deal_hands(game) do
     game
     |> clear_table
-    |> deal_two_cards_to_each_player
+    |> deal_cards_to_each_player
+    |> deal_cards_to_each_player
   end
 
   defp clear_table(game) do
@@ -56,16 +57,10 @@ defmodule Pokerwars.Game do
     %{game | current_deck: game.original_deck, players: players}
   end
 
-  defp deal_two_cards_to_each_player(%{players: players, current_deck: deck} = game) do
-    deal_hand = fn (player, {deck, players}) ->
-      {deck, player} = deal_card_to_player(deck, player)
-      {deck, players ++ [player]}
-    end
+  defp deal_cards_to_each_player(%{players: players, current_deck: deck} = game) do
+    {new_deck, new_players} = deal_cards_from_deck(deck, players)
 
-    {deck, players} = Enum.reduce(players, {deck, []}, deal_hand)
-    {deck, players} = Enum.reduce(players, {deck, []}, deal_hand)
-
-    %{game | players: players, current_deck: deck}
+    %{game | players: new_players, current_deck: new_deck}
   end
 
   defp deal_card_to_player(deck, player) do
@@ -74,10 +69,14 @@ defmodule Pokerwars.Game do
     {deck, player}
   end
 
-  defp deal_cards_to_players(deck, players) do
-    Enum.reduce(players, {deck, []}, fn (player, {current_deck, current_players}) ->
-      {new_deck, new_player} = deal_card_to_player(current_deck, player)
-      {new_deck, current_players ++ [new_player]}
-    end)
+  defp deal_cards_from_deck(deck, [] = rest) do
+    {deck, []}
+  end
+
+  defp deal_cards_from_deck(deck, [player | rest]) do
+    {deck_after_deal, updated_player} = deal_card_to_player(deck, player)
+    {final_deck, players} = deal_cards_from_deck(deck_after_deal, rest)
+
+    {final_deck, [updated_player | players]}
   end
 end
