@@ -9,10 +9,7 @@ defmodule Pokerwars.Game do
   @max_players 2
 
   def create(deck \\ Deck.in_order) do
-    {
-      :ok,
-      %__MODULE__{ original_deck: deck }
-    }
+    %__MODULE__{ original_deck: deck }
   end
 
   def apply_action(game, action) do

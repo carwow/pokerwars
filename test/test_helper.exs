@@ -1,5 +1,6 @@
 defmodule Pokerwars.TestHelpers do
   import ExUnit.Assertions
+  alias Pokerwars.{Player}
 
   def assert_score(card_strings, expected_score) do
     cards = parse_cards(card_strings)
@@ -41,6 +42,14 @@ defmodule Pokerwars.TestHelpers do
     card_strings
     |> String.split(" ")
     |> Enum.map(&(Pokerwars.Card.parse(&1)))
+  end
+
+  def jade do
+    Player.create("Jade")
+  end
+
+  def david do
+    Player.create("David")
   end
 end
 ExUnit.start()
