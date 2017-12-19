@@ -1,0 +1,13 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/pokerwars
+    docker:
+      - image: elixir:1.5.2
+        environment:
+          POSTGRES_USER: ubuntu
+    steps:
+      - checkout
+      - run: mix deps.get
+      - run: mix test
+
