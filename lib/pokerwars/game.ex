@@ -1,6 +1,9 @@
 defmodule Pokerwars.Game do
   alias Pokerwars.{Deck, Player}
 
+  @small_blind 10
+  @big_blind @small_blind * 2
+
   defstruct players: [], status: :waiting_for_players, current_deck: nil, original_deck: nil
 
   @max_players 2
@@ -42,7 +45,17 @@ defmodule Pokerwars.Game do
   defp waiting_for_players(_, game), do: {:invalid_action, game}
 
   defp ready_to_start({:start_game}, game) do
-    {:ok, %{deal_hands(game) | status: :started}}
+    game = deal_hands(game)
+
+    game = %{game | status: :pre_flop}
+
+    game = take_blinds(game)
+    {:ok, game}
+  end
+
+  defp ready_to_start({:join, player}, game) do
+    waiting_for_players({:join, player}, game)
+    {:ok, game}
   end
 
   defp deal_hands(game) do
@@ -50,6 +63,19 @@ defmodule Pokerwars.Game do
     |> clear_table
     |> deal_cards_to_each_player
     |> deal_cards_to_each_player
+  end
+
+  defp take_blinds(game) do
+    players = game.players
+
+    [ first_player, second_player | other_players ] = players
+
+    first_player = %{first_player | stack: first_player.stack - @small_blind}
+    second_player = %{second_player | stack: second_player.stack - @big_blind}
+
+    new_players = [first_player, second_player | other_players]
+
+    %{game | players: new_players}
   end
 
   defp clear_table(game) do

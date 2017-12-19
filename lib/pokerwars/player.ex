@@ -1,9 +1,9 @@
 defmodule Pokerwars.Player do
-  defstruct name: '', hand: []
+  defstruct name: '', hand: [], stack: 0
   alias Pokerwars.Player
 
-  def create(name) do
-    %Player{name: name}
+  def create(name, stack \\ 0) do
+    %Player{name: name, stack: stack}
   end
 
   def clear_hand(%Player{} = player) do
