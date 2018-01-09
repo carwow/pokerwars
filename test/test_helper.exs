@@ -51,5 +51,9 @@ defmodule Pokerwars.TestHelpers do
   def david do
     Player.create("David")
   end
+
+  def ken do
+    Player.create("Ken")
+  end
 end
 ExUnit.start()
