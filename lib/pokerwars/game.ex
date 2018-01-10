@@ -3,10 +3,10 @@ defmodule Pokerwars.Game do
 
   @small_blind 10
   @big_blind @small_blind * 2
-
-  defstruct players: [], status: :waiting_for_players, current_deck: nil, original_deck: nil
-
   @max_players 2
+
+  defstruct players: [], status: :waiting_for_players, current_deck: nil, original_deck: nil, \
+    hole_cards: [], current_player: 0
 
   def create(deck \\ Deck.in_order) do
     %__MODULE__{ original_deck: deck }
@@ -27,6 +27,22 @@ defmodule Pokerwars.Game do
   end
   defp phase(:ready_to_start, game, action) do
     ready_to_start(action, game)
+  end
+  defp phase(:pre_flop, game, action) do
+    if(game.current_player == length(game.players)) do
+      new_game = %{ game | status: :pre_flop, current_player: game.current_player + 1 }
+    else
+      flop = Enum.take(game.current_deck.cards, 3)
+      new_cards = Enum.slice(game.current_deck.cards, 3, 52)
+
+      new_game = %{ game | status: :flop, hole_cards: flop, \
+        current_deck: %Deck{game.current_deck | cards: new_cards } }
+    end
+
+    {:ok, new_game}
+  end
+  defp phase(:flop, game, action) do
+    {:ok, game}
   end
 
   defp next_status(%__MODULE__{status: :waiting_for_players, players: players} = game)
@@ -101,5 +117,17 @@ defmodule Pokerwars.Game do
     {updated_deck, updated_others} = deal_cards_from_deck(deck_after_deal, others)
 
     {updated_deck, [updated_player | updated_others]}
+  end
+end
+
+defimpl String.Chars, for: Pokerwars.Game do
+  def to_string(game) do
+    Enum.join [
+      "%Pokerwars.Game{\n",
+      "  status: #{game.status}\n",
+      "  current_deck: (#{length(game.current_deck.cards)} cards)\n",
+      "  players: (#{length(game.players)})\n",
+      "}"
+    ]
   end
 end
