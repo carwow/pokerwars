@@ -13,15 +13,17 @@ defmodule Pokerwars.PayingBlindsTest do
     assert stacks == [90, 80]
   end
 
+  @tag :wip
   test "First player after big bling bets" do
     players = [
-      %{david() | stack: 90},
-      %{jade() | stack: 80},
+      %{david() | stack: 100},
+      %{jade() | stack: 100},
       %{ken() | stack: 100},
     ]
-    game = %{ Game.create | players: players, status: :pre_flop }
 
-    {:ok, game} = Game.apply_action(game, {:bet, 'Ken'})
+    game = %{ Game.create | players: players, status: :ready_to_start }
+    {:ok, game} = Game.apply_action(game, {:start_game})
+    {:ok, game} = Game.apply_action(game, {:bet, "Ken"})
 
     stacks = Enum.map(game.players, &(&1.stack))
     assert stacks == [90, 80, 80]
@@ -33,9 +35,10 @@ defmodule Pokerwars.PayingBlindsTest do
       %{jade() | stack: 100},
       %{ken() | stack: 100},
     ]
-    game = %{ Game.create | players: players, status: :pre_flop }
 
-    {:error, :not_your_turn} = Game.apply_action(game, {:bet, 'David'})
+    game = %{ Game.create | players: players, status: :ready_to_start }
+    {:ok, game} = Game.apply_action(game, {:start_game})
+    {:error, :not_your_turn} = Game.apply_action(game, {:bet, "David"})
 
     stacks = Enum.map(game.players, &(&1.stack))
     assert stacks == [90, 80, 100]

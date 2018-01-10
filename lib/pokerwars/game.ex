@@ -3,10 +3,14 @@ defmodule Pokerwars.Game do
 
   @small_blind 10
   @big_blind @small_blind * 2
+  @min_players 2
 
-  defstruct players: [], status: :waiting_for_players, current_deck: nil, original_deck: nil
-
-  @max_players 2
+  defstruct players: [],
+    status: :waiting_for_players,
+    current_deck: nil,
+    original_deck: nil,
+    current_bet: 0,
+    current_player_name: nil
 
   def create(deck \\ Deck.in_order) do
     %__MODULE__{ original_deck: deck }
@@ -28,31 +32,45 @@ defmodule Pokerwars.Game do
   defp phase(:ready_to_start, game, action) do
     ready_to_start(action, game)
   end
+  defp phase(:pre_flop, game, action) do
+    betting_action(action, game)
+  end
 
   defp next_status(%__MODULE__{status: :waiting_for_players, players: players} = game)
-  when length(players) == @max_players do
+  when length(players) == @min_players do
     {:ok, %{game | status: :ready_to_start}}
   end
   defp next_status(game), do: {:ok, game}
 
   defp waiting_for_players({:join, player}, %{players: players} = game)
-  when length(players) < @max_players do
+  when length(players) < @min_players do
     {:ok, %{game | players: game.players ++ [player]}}
   end
   defp waiting_for_players(_, game), do: {:invalid_action, game}
 
   defp ready_to_start({:start_game}, game) do
     game = deal_hands(game)
-
-    game = %{game | status: :pre_flop}
-
     game = take_blinds(game)
+
+    first_player = get_first_betting_player(game)
+    game = %{game | status: :pre_flop,
+      current_bet: @big_blind,
+      current_player_name: first_player.name }
+
     {:ok, game}
   end
-
   defp ready_to_start({:join, player}, game) do
     waiting_for_players({:join, player}, game)
     {:ok, game}
+  end
+
+  defp betting_action({:bet, player_name}, %{current_player_name: player_name} = game) do
+    next_player = next_betting_player(game.players, player_name)
+    new_players = player_bet(game.players, player_name, game.current_bet)
+    {:ok, %{game | players: new_players, current_player_name: next_player.name}}
+  end
+  defp betting_action({:bet, _player_name}, _game) do
+    {:error, :not_your_turn}
   end
 
   defp deal_hands(game) do
@@ -101,5 +119,24 @@ defmodule Pokerwars.Game do
     {updated_deck, updated_others} = deal_cards_from_deck(deck_after_deal, others)
 
     {updated_deck, [updated_player | updated_others]}
+  end
+
+  defp get_first_betting_player(%{players: [first, _second]}), do: first
+  defp get_first_betting_player(%{players: [_first, _second, third | _rest]}), do: third
+
+  defp next_betting_player([%{name: name}, second | _rest], name) do
+    second
+  end
+  defp next_betting_player([first | rest], name) do
+    next_betting_player(rest ++ [first], name)
+  end
+
+  defp player_bet(players, name, bet) do
+    Enum.map(players, fn
+      %{name: ^name, stack: stack} = player ->
+        %{player | stack: stack - bet}
+      other ->
+        other
+    end)
   end
 end
