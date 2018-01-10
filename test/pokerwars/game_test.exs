@@ -56,4 +56,15 @@ defmodule Pokerwars.GameTest do
     assert status == :invalid_action
     assert game.status == :waiting_for_players
   end
+
+  test "The game has a string representation" do
+    string = Game.create |> Kernel.to_string
+    assert string == Enum.join([
+      "%Pokerwars.Game{\n",\
+      "  status: waiting_for_players\n",
+      "  current_deck: 0\n",
+      "  players: 0\n",
+      "}"
+    ])
+  end
 end
