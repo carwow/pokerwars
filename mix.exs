@@ -28,6 +28,8 @@ defmodule Pokerwars.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [
+      {:mix_test_watch, "~> 0.5", only: :dev}
+    ]
   end
 end
